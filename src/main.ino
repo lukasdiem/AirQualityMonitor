@@ -1,11 +1,17 @@
 /**
  * Copied from: https://draeger-it.blog/arduino-lektion-113-umweltsensor-bme680-fuer-rel-luftfeuchtigkeit-luftdruck-temperatur-und-luftqualitaet/?cn-reloaded=1
  * */
-#include <heltec.h>
+//#include <h>
 
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
 #include "Adafruit_BME680.h"
+
+
+#define OLED_RESET 16
 
 #define SDA 4
 #define SCL 5
@@ -13,8 +19,7 @@
 #define SEALEVELPRESSURE_HPA (1013.25)
 
 Adafruit_BME680 bme; // I2C
-
-#define OLED_RESET 4
+Adafruit_SSD1306 display(OLED_RESET);
 
 
 float hum_score, gas_score;
@@ -31,8 +36,10 @@ void setup() {
   while (!Serial);
   Serial.println(F("BME680 test"));
 
-  Heltec.begin(true /*DisplayEnable Enable*/, false /*Serial Enable*/);
-  Heltec.display->clear();
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+  display.display();
+  delay(1000);
+  display.clearDisplay();
 
   delay(2000);
   
@@ -55,27 +62,33 @@ void loop() {
     return;
   }
 
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+  
   delay(1000);
   
   String temp = "T: " + String(bme.temperature, 2) + "C";
   temp += " | H: " + String(bme.humidity, 2) + "%";
-  Heltec.display->drawString(0, 0, temp);
+  display.setCursor(0, 0);
+  display.println(temp);
 
   /*String gas = "Gas: ";
   gas += String(bme.gas_resistance / 1000.0, 2);
   gas += " KOhms";
-  Heltec.display->drawString(0, 16, gas);*/
+  display.println(0, 16, gas);*/
 
   float iaqScore = CalculateAirQualityScore();
   String airQuality = CalculateIAQ(iaqScore);
 
   String scoreString = "Score: " + String(iaqScore, 2);
-  Heltec.display->drawString(0, 10, scoreString);
+  display.setCursor(0, 10);
+  display.println(scoreString);
 
-  Heltec.display->drawString(0, 20, airQuality);
+  display.setCursor(0, 20);
+  display.println(airQuality);
 
-  Heltec.display->display();
-  Heltec.display->clear();
+  display.display();
+  display.clearDisplay();
 }
 
 float CalculateAirQualityScore() {
@@ -115,12 +128,12 @@ void GetGasReference(){
 String CalculateIAQ(float score) {
   String IAQ_text = "Air quality is ";
   score = (100 - score) * 5;
-  if      (score >= 301)                  IAQ_text += "Hazardous";
-  else if (score >= 201 && score <= 300 ) IAQ_text += "Very Unhealthy";
-  else if (score >= 176 && score <= 200 ) IAQ_text += "Unhealthy";
-  else if (score >= 151 && score <= 175 ) IAQ_text += "Unhealthy for Sensitive Groups";
-  else if (score >=  51 && score <= 150 ) IAQ_text += "Moderate";
-  else if (score >=  00 && score <=  50 ) IAQ_text += "Good";
+  if      (score >= 300)                  IAQ_text += "Hazardous";
+  else if (score >= 200 && score < 300 ) IAQ_text += "Very Unhealthy";
+  else if (score >= 175 && score < 200 ) IAQ_text += "Unhealthy";
+  else if (score >= 150 && score < 175 ) IAQ_text += "Unhealthy for Sensitive Groups";
+  else if (score >=  50 && score < 150 ) IAQ_text += "Moderate";
+  else if (score >=  00 && score <  50 ) IAQ_text += "Good";
   else IAQ_text += "Unknown (" + String(score, 2) + ")";
   return IAQ_text;
 }
