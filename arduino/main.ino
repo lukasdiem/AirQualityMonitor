@@ -1,5 +1,7 @@
 #include <Button2.h>
 
+#include <Button2.h>
+
 /**
  * Adapted from: https://draeger-it.blog/arduino-lektion-113-umweltsensor-bme680-fuer-rel-luftfeuchtigkeit-luftdruck-temperatur-und-luftqualitaet/?cn-reloaded=1
  * */
@@ -12,8 +14,11 @@
 #include <Adafruit_SSD1306.h>
 #include <Wire.h>
 #include <ESP8266WiFi.h>
+#include <WiFiManager.h>
+#include <NTPClient.h>
 
 #include "src/BME680/BME680.h"
+#include "src/BME680/BME680History.h"
 
 // Pin definitions
 #define LED_PIN 13 // GPIO13 (D7)
@@ -29,8 +34,14 @@
 
 #define SEALEVELPRESSURE_HPA (1013.25)
 
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP);
+
+WiFiManager wifiManager;
+
 // Create an object of the class Bsec
 LD::BME680 iaqSensor;
+LD::BME680History iaqSensorHistory(timeClient);
 
 //Adafruit_BME680 bme; // I2C
 Adafruit_SSD1306 display(128, 32, &Wire, OLED_RESET);
@@ -49,11 +60,11 @@ uint8_t ledBrightness = 30;
 uint8_t ledBrightnessStep = 5;
 
 void setup()
-{
+{  
   // Disable wifi to save power
-  WiFi.mode(WIFI_OFF);
+  /*WiFi.mode(WIFI_OFF);
   WiFi.forceSleepBegin();
-  delay(1);
+  delay(1);*/
 
   // Initialize the button callbacks
   btnLeft.setReleasedHandler(buttonLeftCallback);
@@ -79,10 +90,31 @@ void setup()
 
   // Initialize NeoPixel
   pixels.begin();
+
+  // start the wifi manager
+  String apID = String("Dufte-") + ESP.getChipId();
+  Serial.println("Access point id: " +  apID);
+
+  //wifiManager.resetSettings();
+  //wifiManager.setWiFiAPHidden(false);
+  wifiManager.autoConnect(apID.c_str());
+
+  // Wifi is ready here
+  timeClient.begin();
+  timeClient.setTimeOffset(3600); // GMT+1
+  
+  iaqSensor.setUpdateCallback(sensorUpdate);
 }
 
 void loop()
 {
+  timeClient.update();
+
+  // DEBUG
+  Serial.println("DateTime: " + timeClient.getFormattedTime());
+
+  //wifiManager.process();
+
   static unsigned long last_time = 0;
 
   btnLeft.loop();
@@ -139,7 +171,18 @@ void loop()
 
   display.clearDisplay();
 
+  // DEBUG
+  sensorUpdate(iaqSensor);
+
   delay(100);
+}
+
+void sensorUpdate(LD::BME680& sensor)
+{
+  Serial.println("a");
+  iaqSensorHistory.update(sensor);
+  Serial.println("b");
+  serializeJsonPretty(iaqSensorHistory.toJson(), Serial);
 }
 
 void buttonLeftCallback(Button2& btn)

@@ -2,38 +2,6 @@
     "version": 4,
     "configurations": [
         {
-            "name": "Win32",
-            "compilerPath": "",
-            "compilerArgs": [],
-            "intelliSenseMode": "clang-x64",
-            "includePath": [
-                "C:\\Users\\lukas\\Documents\\Arduino\\libraries\\Button2\\src",
-                "C:\\Users\\lukas\\Documents\\Arduino\\libraries\\Button",
-                "C:\\Users\\lukas\\AppData\\Local\\Arduino15\\packages\\heltec-esp8266\\tools\\**",
-                "C:\\Users\\lukas\\AppData\\Local\\Arduino15\\packages\\heltec-esp8266\\hardware\\esp8266\\0.0.4\\**",
-                "C:\\Users\\lukas\\Documents\\Arduino\\libraries\\Heltec_ESP8266_Dev-Boards\\src",
-                "C:\\Users\\lukas\\Documents\\Arduino\\libraries\\Heltec_ESP8266_Dev-Boards\\src\\oled",
-                "C:\\Users\\lukas\\Documents\\Arduino\\libraries\\Adafruit_SSD1306",
-                "C:\\Users\\lukas\\Documents\\Arduino\\libraries\\BSEC_Software_Library\\src",
-                "C:\\Users\\lukas\\Documents\\Arduino\\libraries\\Adafruit_GFX_Library",
-                "C:\\Users\\lukas\\Documents\\Arduino\\libraries\\Adafruit_BusIO",
-                "C:\\Users\\lukas\\Documents\\Arduino\\libraries\\Adafruit_Unified_Sensor",
-                "C:\\Users\\lukas\\Documents\\Arduino\\libraries\\Adafruit_NeoPixel",
-                "C:\\Users\\lukas\\AppData\\Local\\Arduino15\\packages\\esp8266\\tools\\**",
-                "C:\\Users\\lukas\\Documents\\Arduino\\libraries\\**",
-                "C:\\Program Files (x86)\\Arduino\\libraries\\**",
-                "C:\\Users\\lukas\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.7.4\\**",
-                "C:\\Users\\lukas\\Documents\\Arduino\\libraries\\Adafruit_BME680_Library\\**",
-                "C:\\Users\\lukas\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.7.4\\libraries\\SPI"
-            ],
-            "forcedInclude": [],
-            "cStandard": "c11",
-            "cppStandard": "c++17",
-            "defines": [
-                "USBCON"
-            ]
-        },
-        {
             "name": "Arduino",
             "compilerPath": "C:\\Users\\lukas\\AppData\\Local\\Arduino15\\packages\\esp8266\\tools\\xtensa-lx106-elf-gcc\\2.5.0-4-b40a506\\bin\\xtensa-lx106-elf-g++",
             "compilerArgs": [
@@ -61,7 +29,13 @@
                 "C:\\Users\\lukas\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.7.4\\libraries\\SPI",
                 "C:\\Users\\lukas\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.7.4\\libraries\\Wire",
                 "C:\\Users\\lukas\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.7.4\\libraries\\ESP8266WiFi\\src",
+                "C:\\Users\\lukas\\Documents\\Arduino\\libraries\\WiFiManager",
+                "C:\\Users\\lukas\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.7.4\\libraries\\ESP8266WebServer\\src",
+                "C:\\Users\\lukas\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.7.4\\libraries\\DNSServer\\src",
+                "C:\\Users\\lukas\\Documents\\Arduino\\libraries\\NTPClient",
                 "C:\\Users\\lukas\\Documents\\Arduino\\libraries\\BSEC_Software_Library\\src",
+                "C:\\Users\\lukas\\Documents\\Arduino\\libraries\\ArduinoJson\\src",
+                "C:\\Users\\lukas\\Documents\\Arduino\\libraries\\CircularBuffer",
                 "C:\\Users\\lukas\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.7.4\\libraries\\EEPROM",
                 "C:\\Users\\lukas\\Documents\\Arduino\\libraries\\Adafruit_BusIO",
                 "c:\\users\\lukas\\appdata\\local\\arduino15\\packages\\esp8266\\tools\\xtensa-lx106-elf-gcc\\2.5.0-4-b40a506\\xtensa-lx106-elf\\include\\c++\\4.8.2",
@@ -306,7 +280,8 @@
                 "__GCC_ATOMIC_SHORT_LOCK_FREE=1",
                 "__UINT_FAST8_TYPE__=unsigned int",
                 "__ATOMIC_ACQ_REL=4",
-                "__ATOMIC_RELEASE=3"
+                "__ATOMIC_RELEASE=3",
+                "USBCON"
             ]
         }
     ]

@@ -18,6 +18,10 @@ namespace LD
 
         void printSensorStatus(void);
 
+        typedef void (*CallbackFunction)(BME680 &);
+        
+        CallbackFunction update_callback = NULL;
+
     public:
         #pragma region "Parameters"
         bsec_virtual_sensor_t sensorSubscriptionList[10] = {
@@ -72,6 +76,11 @@ namespace LD
          * @brief Update the sensor values. Returns true if new sensor values are available.
          */
         bool update();
+
+        /**
+         * @brief Callback that is called if new sensor values are read
+         */
+        void setUpdateCallback(CallbackFunction f);
         #pragma endregion "Methods"
     };    
 } // namespace LD

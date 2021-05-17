@@ -4,6 +4,7 @@
         "ostream": "cpp",
         "*.txt": "cpp",
         "*.tcc": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "*.tpp": "cpp"
     }
 }

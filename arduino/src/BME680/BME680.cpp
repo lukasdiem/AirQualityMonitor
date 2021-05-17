@@ -43,6 +43,11 @@ namespace LD
         return bsecConfig;
     }
 
+    void BME680::setUpdateCallback(CallbackFunction f)
+    {
+        update_callback = f;
+    }
+
     bool BME680::update()
     {
         if (sensor.status != BSEC_OK || sensor.bme680Status != BME680_OK)
@@ -75,6 +80,12 @@ namespace LD
             breathVocAccuracy = sensor.breathVocAccuracy;
             compGasAccuracy = sensor.compGasAccuracy;
             gasPercentageAcccuracy = sensor.gasPercentageAcccuracy;
+
+            // Notify about the update
+            if (update_callback != NULL)
+            { 
+                update_callback(*this);     
+            } 
         }
 
         return newData;
