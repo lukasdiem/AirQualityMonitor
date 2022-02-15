@@ -1,6 +1,31 @@
-# BSEC Library
+# Air Quality Monitor
 
-To compile with the BSEC Library it is important ot select the Gerneric ESP8266 module (not the Heltec WIFI8 one).
+This is an implementation to monitor the Air Quality using an ESP8266 and a BME680 module.
+
+**Caution:** This project is under development and far from finished. Let's see if it is ever finished.
+
+## Wiring
+
+Development board: HELTEC WIFI8 Board
+
+**ESP -> BME:**
+
+| ESP PIN | BME Pin |
+| :-----: | :------ |
+|   3.3   | VCC     |
+|   GND   | GND     |
+|   D1    | SCL     |
+|   D2    | SDA     |
+
+**ESP -> LED (5xWS2812):**
+
+| ESP PIN | LED Pin |
+| :-----: | :------ |
+|   D7    | DIN     |
+
+## BSEC Library
+
+To compile with the BSEC Library it is important to select the Gerneric ESP8266 module (not the Heltec WIFI8 one).
 
 Additionally, the following file has to be adapted, to support precompiled libraries on this platform:
 
