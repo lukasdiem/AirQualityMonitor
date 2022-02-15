@@ -1,0 +1,3 @@
+[submodule "arduino/lib/ESPAsyncWebServer"]
+	path = arduino/lib/ESPAsyncWebServer
+	url = https://github.com/me-no-dev/ESPAsyncWebServer.git

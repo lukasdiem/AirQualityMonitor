@@ -8,7 +8,7 @@ namespace LD
     {
     private:
         Bsec sensor;
-        
+
         uint8_t sensorState[BSEC_MAX_STATE_BLOB_SIZE] = {0};
         uint16_t stateUpdateCounter = 0;
 

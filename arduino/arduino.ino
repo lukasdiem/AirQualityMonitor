@@ -1,21 +1,29 @@
-#include <Button2.h>
-
-#include <Button2.h>
-
 /**
  * Adapted from: https://draeger-it.blog/arduino-lektion-113-umweltsensor-bme680-fuer-rel-luftfeuchtigkeit-luftdruck-temperatur-und-luftqualitaet/?cn-reloaded=1
  * */
-//#include <h>
-
 #include <Button2.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_NeoPixel.h>
 #include <Adafruit_SSD1306.h>
 #include <Wire.h>
-#include <ESP8266WiFi.h>
 #include <WiFiManager.h>
 #include <NTPClient.h>
+
+#ifdef ESP32
+  #include <WiFi.h>
+  #include <ESPAsyncWebServer.h>
+  #include <SPIFFS.h>
+#else
+  #include <Arduino.h>
+  #include <ESP8266WiFi.h>
+  //#include <Hash.h>
+  #include <ESPAsyncTCP.h>
+
+  #define WEBSERVER_H // needed to avoid conflicting defines used by ESPWebServer library of the WifiManager (https://github.com/me-no-dev/ESPAsyncWebServer/issues/418#issuecomment-667976368)
+  #include <ESPAsyncWebServer.h>
+  #include <LittleFS.h>
+#endif
 
 #include "src/BME680/BME680.h"
 #include "src/BME680/BME680History.h"
@@ -39,6 +47,9 @@ NTPClient timeClient(ntpUDP);
 
 WiFiManager wifiManager;
 
+// Create AsyncWebServer object on port 80
+AsyncWebServer server(80);
+
 // Create an object of the class Bsec
 LD::BME680 iaqSensor;
 LD::BME680History iaqSensorHistory(timeClient);
@@ -56,8 +67,35 @@ Button2 btnRight = Button2(BUTTON_RIGHT);
 // strandtest example for more information on possible values.
 Adafruit_NeoPixel pixels(NUM_LEDS, LED_PIN, NEO_GRB + NEO_KHZ800);
 
-uint8_t ledBrightness = 30;
+uint8_t ledBrightness = 50;
 uint8_t ledBrightnessStep = 5;
+
+void setupWebServer()
+{
+  Serial.println("Starting the WebServer ... ");
+
+  // Route for root / web page
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(LittleFS, "/index.html");
+  });
+  server.on("/bme680/iaq", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/plain", String(iaqSensor.iaq).c_str());
+  });
+  server.on("/bme680/temperature", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/plain", String(iaqSensor.temperature).c_str());
+  });
+  server.on("/bme680/humidity", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/plain", String(iaqSensor.humidity).c_str());
+  });
+  server.on("/bme680/pressure", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/plain", String(iaqSensor.pressure).c_str());
+  });
+
+  // Start server
+  server.begin();
+
+  Serial.println("WebServer started ... ");
+}
 
 void setup()
 {  
@@ -73,7 +111,7 @@ void setup()
   // set the SDA, SCL ports (I2C)
   Wire.begin(SDA, SCL);
 
-  Serial.begin(19200);
+  Serial.begin(115200);
   while (!Serial);
   Serial.println(F("BME680 test"));
 
@@ -82,6 +120,17 @@ void setup()
   display.display();
   delay(1000);
 
+  // Initialize LittleFS
+  if(!LittleFS.begin()){
+    Serial.println("An Error has occurred while mounting SPIFFS");
+  }
+  if (LittleFS.exists("/index.html")) {
+    Serial.println("index.html exists");
+  } else {
+    Serial.println("index.html is missing");
+  }
+  
+  // Initialize the BSEC
   iaqSensor.begin(0x77, Wire);
 
   // Print the header
@@ -104,6 +153,9 @@ void setup()
   timeClient.setTimeOffset(3600); // GMT+1
   
   iaqSensor.setUpdateCallback(sensorUpdate);
+
+  // Setup the web server
+  setupWebServer();
 }
 
 void loop()
@@ -111,11 +163,11 @@ void loop()
   timeClient.update();
 
   // DEBUG
-  Serial.println("DateTime: " + timeClient.getFormattedTime());
+  //Serial.println("DateTime: " + timeClient.getFormattedTime());
 
   //wifiManager.process();
 
-  static unsigned long last_time = 0;
+  static unsigned long lastTime = 0;
 
   btnLeft.loop();
   btnRight.loop();
@@ -179,10 +231,10 @@ void loop()
 
 void sensorUpdate(LD::BME680& sensor)
 {
-  Serial.println("a");
+  //Serial.println("a");
   iaqSensorHistory.update(sensor);
-  Serial.println("b");
-  serializeJsonPretty(iaqSensorHistory.toJson(), Serial);
+  //Serial.println("b");
+  //serializeJsonPretty(iaqSensorHistory.toJson(), Serial);
 }
 
 void buttonLeftCallback(Button2& btn)

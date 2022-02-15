@@ -52,5 +52,9 @@ namespace LD
             DynamicJsonDocument toJson();
 
             void fromJson(DynamicJsonDocument &data);
+
+            void saveData();
+            
+            void loadData();
     };
 }
